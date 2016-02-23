@@ -515,6 +515,10 @@ class iBem extends iObservable {
      */
     static get blocks () { return blocks }
 
+    static es6decl (blockName, blockClass) {
+        blocks[blockName] = blockClass;
+    }
+
     /**
      * Declares blocks and creates a block class
      * @static

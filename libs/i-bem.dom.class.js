@@ -8,6 +8,8 @@
 module.exports.iBemDom = (()=>{
 'use strict';
 
+let scope = null;
+
 class iBemDom extends iBem {
     /**
      * @class Base block for creating BEM blocks that have DOM representation
@@ -783,7 +785,8 @@ class iBemDom extends iBem {
      * Will be set on onDomReady to tag `body`
      * @type {jQuery}
      */
-    static get scope () { return null }
+    static get scope () { return scope; }
+    static set scope (newScope) { return (scope = newScope); }
 
     /**
      * Document shortcut
@@ -1461,6 +1464,8 @@ class iBemDom extends iBem {
 $(function() {
     BEM.DOM.scope = $('body');
 });
+
+BEM.DOM = iBemDom;
 
 return iBemDom;
 })();
