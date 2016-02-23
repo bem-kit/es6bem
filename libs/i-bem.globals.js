@@ -39,7 +39,7 @@ function buildElemClass(block, name, modName, modVal, buffer) {
     modVal && buildModPostfix(modName, modVal, buffer);
 }
 
-BEM.INTERNAL = {
+var INTERNAL = BEM.INTERNAL = {
 
     NAME_PATTERN: NAME_PATTERN,
 

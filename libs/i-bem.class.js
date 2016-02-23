@@ -730,5 +730,10 @@ class iBem extends iObservable {
     }
 
 }
+
+BEM = iBem;
+BEM.INTERNAL = INTERNAL;
+BEM.DOM = {};
+
 return iBem;
 })();
