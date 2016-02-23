@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<title>Invntrm Progress</title>
+<style>
+.techs {
+    width: 80vw;
+    max-width: 800px;
+    min-width: 400px;
+    margin: auto;
+}
+
+.-point .--value + .--units {
+    margin-left: .5em;
+}
+.-caption {
+    text-align: center;
+}
+.techs--list {
+    width: 300px;
+    margin: auto;
+    padding-left: 65px;
+}
+</style>
+<section class="techs">
+    <h1 class="-caption">Invntrm expertise levels</h1>
+
+    <section class="techs--yandex">
+        <h2 class="-caption">Yandex techs</h2>
+
+        <section>
+            <dl class="techs--yandex--list techs--list --list">
+                <dt data-for="${tech_id}">${tech_name}</dt>
+                <dd id="${tech_id}">
+                    <progress value="${tech_level}" max="${MAX_LEVEL}"></progress>
+                    <span class="--level -point"><span class="--value">${tech_level}</span><span class="--units">LVL</span></span>
+                </dd>
+            </dl>
+        </section>
+    </section>
+    <section>
+        <h2 class="-caption">Frontend techs</h2>
+
+    </section>
+</section>
+<script src="libs/lodash.js"></script>
+<script src="libs/i-jquery__core_version_1.8.3.js"></script>
+<script src="libs/i-jquery__identify.js"></script> 
+<script>var slug = string => string.replace(/-/g, '').replace(/\W+/g, '-');</script>
+<script >_.set(window, 'module.exports', {});</script>
+
+<script src="libs/i-bem.globals.js"></script> 
+
+<!-- import iObservable -->
+    <script src="libs/i-jquery__observable.class.js"></script>
+    <script >var iObservable = _.get(window, 'module.exports.iObservable'); console.log('iObservable',iObservable)</script>
+
+<!-- import i-bem -->
+    <script src="libs/i-bem.class.js"></script>
+    <script >var iBem = _.get(window, 'module.exports.iBem')</script>
+
+<!-- import i-bem-dom -->
+    <script src="libs/i-bem.dom.class.js"></script>
+    <script >var iBemDom = _.get(window, 'module.exports.iBemDom')</script>
+
+<script>
+// todos
+// * Уровни хранить в человеко-читаемом DSL с неновящевым js парсингом
+// * шаблон скрывать за display:none
+// * добавить invntrm's performanse: tasks, sp
+// * добавить историю, сравнения, графики
+// * добавить аннотированные коммиты/достижения
+// * добавить нормировку на обширность оластей
+
+const MaxLevel = 100;
+const ImportantLevel = 80;
+var techs = {
+    yandex: {
+        'bem concept':     { level: 50 },
+        'i-bem using':     { level: 30 },
+        'bemhtml+bemjson': { level: 25 },
+        'bempriv':         { level: 10 },
+        'lego blocks':     { level: 15 },
+        'i-bem source':    { level: 10 },
+        'enb configuring': { level: 10 },
+    },
+    frontend: {
+        'js':           { level: 60 },
+        'es6':          { level: 15 },
+        'lodash':       { level: 40 },
+        'css':          { level: 50 },
+    }
+};
+var $techsYandexList = $('.techs--yandex--list');
+var template = $techsYandexList.html();
+var _template_ = _.template(template, { imports: { MAX_LEVEL: MaxLevel } });
+
+_.set(window, 'dom.techs.yandex', _.map(techs.yandex, (data, tech) => {
+    return _template_({ tech_id: slug(tech), tech_name: tech, tech_level: data.level });
+}));
+
+$techsYandexList.html(dom.techs.yandex);
+</script>

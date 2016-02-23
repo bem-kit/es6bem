@@ -1,0 +1,368 @@
+{
+    "type": "Program",
+    "body": [
+        {
+            "type": "ExpressionStatement",
+            "expression": {
+                "type": "AssignmentExpression",
+                "operator": "=",
+                "left": {
+                    "type": "MemberExpression",
+                    "computed": false,
+                    "object": {
+                        "type": "MemberExpression",
+                        "computed": false,
+                        "object": {
+                            "type": "Identifier",
+                            "name": "module"
+                        },
+                        "property": {
+                            "type": "Identifier",
+                            "name": "exports"
+                        }
+                    },
+                    "property": {
+                        "type": "Identifier",
+                        "name": "iBem"
+                    }
+                },
+                "right": {
+                    "type": "CallExpression",
+                    "callee": {
+                        "type": "ArrowFunctionExpression",
+                        "id": null,
+                        "params": [],
+                        "defaults": [],
+                        "body": {
+                            "type": "BlockStatement",
+                            "body": [
+                                {
+                                    "type": "ClassDeclaration",
+                                    "id": {
+                                        "type": "Identifier",
+                                        "name": "iBem"
+                                    },
+                                    "superClass": null,
+                                    "body": {
+                                        "type": "ClassBody",
+                                        "body": [
+                                            {
+                                                "type": "MethodDefinition",
+                                                "key": {
+                                                    "type": "Identifier",
+                                                    "name": "constructor"
+                                                },
+                                                "computed": false,
+                                                "value": {
+                                                    "type": "FunctionExpression",
+                                                    "id": null,
+                                                    "params": [
+                                                        {
+                                                            "type": "Identifier",
+                                                            "name": "mods"
+                                                        },
+                                                        {
+                                                            "type": "Identifier",
+                                                            "name": "params"
+                                                        }
+                                                    ],
+                                                    "defaults": [],
+                                                    "body": {
+                                                        "type": "BlockStatement",
+                                                        "body": [
+                                                            {
+                                                                "type": "VariableDeclaration",
+                                                                "declarations": [
+                                                                    {
+                                                                        "type": "VariableDeclarator",
+                                                                        "id": {
+                                                                            "type": "Identifier",
+                                                                            "name": "_this"
+                                                                        },
+                                                                        "init": {
+                                                                            "type": "ThisExpression"
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "kind": "var"
+                                                            },
+                                                            {
+                                                                "type": "ExpressionStatement",
+                                                                "expression": {
+                                                                    "type": "AssignmentExpression",
+                                                                    "operator": "=",
+                                                                    "left": {
+                                                                        "type": "MemberExpression",
+                                                                        "computed": false,
+                                                                        "object": {
+                                                                            "type": "Identifier",
+                                                                            "name": "_this"
+                                                                        },
+                                                                        "property": {
+                                                                            "type": "Identifier",
+                                                                            "name": "__self"
+                                                                        }
+                                                                    },
+                                                                    "right": {
+                                                                        "type": "MemberExpression",
+                                                                        "computed": false,
+                                                                        "object": {
+                                                                            "type": "Identifier",
+                                                                            "name": "_this"
+                                                                        },
+                                                                        "property": {
+                                                                            "type": "Identifier",
+                                                                            "name": "constructor"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "type": "ExpressionStatement",
+                                                                "expression": {
+                                                                    "type": "AssignmentExpression",
+                                                                    "operator": "=",
+                                                                    "left": {
+                                                                        "type": "MemberExpression",
+                                                                        "computed": false,
+                                                                        "object": {
+                                                                            "type": "Identifier",
+                                                                            "name": "_this"
+                                                                        },
+                                                                        "property": {
+                                                                            "type": "Identifier",
+                                                                            "name": "_modCache"
+                                                                        }
+                                                                    },
+                                                                    "right": {
+                                                                        "type": "LogicalExpression",
+                                                                        "operator": "||",
+                                                                        "left": {
+                                                                            "type": "Identifier",
+                                                                            "name": "mods"
+                                                                        },
+                                                                        "right": {
+                                                                            "type": "ObjectExpression",
+                                                                            "properties": []
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "type": "ExpressionStatement",
+                                                                "expression": {
+                                                                    "type": "AssignmentExpression",
+                                                                    "operator": "=",
+                                                                    "left": {
+                                                                        "type": "MemberExpression",
+                                                                        "computed": false,
+                                                                        "object": {
+                                                                            "type": "Identifier",
+                                                                            "name": "_this"
+                                                                        },
+                                                                        "property": {
+                                                                            "type": "Identifier",
+                                                                            "name": "_processingMods"
+                                                                        }
+                                                                    },
+                                                                    "right": {
+                                                                        "type": "ObjectExpression",
+                                                                        "properties": []
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "type": "ExpressionStatement",
+                                                                "expression": {
+                                                                    "type": "AssignmentExpression",
+                                                                    "operator": "=",
+                                                                    "left": {
+                                                                        "type": "MemberExpression",
+                                                                        "computed": false,
+                                                                        "object": {
+                                                                            "type": "Identifier",
+                                                                            "name": "_this"
+                                                                        },
+                                                                        "property": {
+                                                                            "type": "Identifier",
+                                                                            "name": "_params"
+                                                                        }
+                                                                    },
+                                                                    "right": {
+                                                                        "type": "Identifier",
+                                                                        "name": "params"
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "type": "ExpressionStatement",
+                                                                "expression": {
+                                                                    "type": "AssignmentExpression",
+                                                                    "operator": "=",
+                                                                    "left": {
+                                                                        "type": "MemberExpression",
+                                                                        "computed": false,
+                                                                        "object": {
+                                                                            "type": "Identifier",
+                                                                            "name": "_this"
+                                                                        },
+                                                                        "property": {
+                                                                            "type": "Identifier",
+                                                                            "name": "params"
+                                                                        }
+                                                                    },
+                                                                    "right": {
+                                                                        "type": "Literal",
+                                                                        "value": null,
+                                                                        "raw": "null"
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    "generator": false,
+                                                    "expression": false
+                                                },
+                                                "kind": "constructor",
+                                                "static": false
+                                            },
+                                            {
+                                                "type": "MethodDefinition",
+                                                "key": {
+                                                    "type": "Identifier",
+                                                    "name": "trigger"
+                                                },
+                                                "computed": false,
+                                                "value": {
+                                                    "type": "FunctionExpression",
+                                                    "id": null,
+                                                    "params": [
+                                                        {
+                                                            "type": "Identifier",
+                                                            "name": "e"
+                                                        },
+                                                        {
+                                                            "type": "Identifier",
+                                                            "name": "data"
+                                                        }
+                                                    ],
+                                                    "defaults": [],
+                                                    "body": {
+                                                        "type": "BlockStatement",
+                                                        "body": [
+                                                            {
+                                                                "type": "ExpressionStatement",
+                                                                "expression": {
+                                                                    "type": "CallExpression",
+                                                                    "callee": {
+                                                                        "type": "MemberExpression",
+                                                                        "computed": false,
+                                                                        "object": {
+                                                                            "type": "MemberExpression",
+                                                                            "computed": false,
+                                                                            "object": {
+                                                                                "type": "CallExpression",
+                                                                                "callee": {
+                                                                                    "type": "MemberExpression",
+                                                                                    "computed": false,
+                                                                                    "object": {
+                                                                                        "type": "ThisExpression"
+                                                                                    },
+                                                                                    "property": {
+                                                                                        "type": "Identifier",
+                                                                                        "name": "__base"
+                                                                                    }
+                                                                                },
+                                                                                "arguments": [
+                                                                                    {
+                                                                                        "type": "AssignmentExpression",
+                                                                                        "operator": "=",
+                                                                                        "left": {
+                                                                                            "type": "Identifier",
+                                                                                            "name": "e"
+                                                                                        },
+                                                                                        "right": {
+                                                                                            "type": "CallExpression",
+                                                                                            "callee": {
+                                                                                                "type": "MemberExpression",
+                                                                                                "computed": false,
+                                                                                                "object": {
+                                                                                                    "type": "ThisExpression"
+                                                                                                },
+                                                                                                "property": {
+                                                                                                    "type": "Identifier",
+                                                                                                    "name": "buildEvent"
+                                                                                                }
+                                                                                            },
+                                                                                            "arguments": [
+                                                                                                {
+                                                                                                    "type": "Identifier",
+                                                                                                    "name": "e"
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    },
+                                                                                    {
+                                                                                        "type": "Identifier",
+                                                                                        "name": "data"
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            "property": {
+                                                                                "type": "Identifier",
+                                                                                "name": "__self"
+                                                                            }
+                                                                        },
+                                                                        "property": {
+                                                                            "type": "Identifier",
+                                                                            "name": "trigger"
+                                                                        }
+                                                                    },
+                                                                    "arguments": [
+                                                                        {
+                                                                            "type": "Identifier",
+                                                                            "name": "e"
+                                                                        },
+                                                                        {
+                                                                            "type": "Identifier",
+                                                                            "name": "data"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            },
+                                                            {
+                                                                "type": "ReturnStatement",
+                                                                "argument": {
+                                                                    "type": "ThisExpression"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    "generator": false,
+                                                    "expression": false
+                                                },
+                                                "kind": "method",
+                                                "static": false
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "type": "ReturnStatement",
+                                    "argument": {
+                                        "type": "Identifier",
+                                        "name": "iBem"
+                                    }
+                                }
+                            ]
+                        },
+                        "generator": false,
+                        "expression": false
+                    },
+                    "arguments": []
+                }
+            }
+        }
+    ],
+    "sourceType": "script"
+}
