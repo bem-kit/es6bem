@@ -1,20 +1,29 @@
-/* jshint eqeqeq: false, maxparams: false */
-/** @requires jquery.inherit */
+/** @requires jquery.isEmptyObject */
 /** @requires jquery.identify */
 /** @requires jquery.observable */
 
-(function($, undefined) {
+// todo заменить $ хелперы на _
+// todo добавить последнее наследование
+
+/**
+ * @see islands/common.blocks/i-bem/i-bem.js
+ * @see not used: bem-bl/blocks-common/i-bem/i-bem.js
+ */
+
+module.exports.iBem = (()=>{
+'use strict';
+
 /**
  * Storage for deferred functions
  * @private
- * @type {Array}
+ * @type Array
  */
 var afterCurrentEventFns = [],
 
 /**
  * Storage for block declarations (hash by block name)
  * @private
- * @type {Object}
+ * @type Object
  */
     blocks = {},
 
@@ -22,7 +31,7 @@ var afterCurrentEventFns = [],
  * Communication channels
  * @static
  * @private
- * @type {Object}
+ * @type Object
  */
     channels = {};
 
@@ -35,11 +44,13 @@ var afterCurrentEventFns = [],
  * @param {String} modVal Modifier value
  * @returns {String}
  */
-function buildModFnName(elemName, modName, modVal) {
-    return (elemName ? '__elem_' + elemName : '') +
+var buildModFnName = (elemName, modName, modVal) => {
+
+    return (elemName? '__elem_' + elemName : '') +
            '__mod' +
-           (modName ? '_' + modName : '') +
-           (modVal ? '_' + modVal : '');
+           (modName? '_' + modName : '') +
+           (modVal? '_' + modVal : '');
+
 }
 
 /**
@@ -50,28 +61,29 @@ function buildModFnName(elemName, modName, modVal) {
  * @param {Object} props
  * @param {String} [elemName]
  */
-function modFnsToProps(modFns, props, elemName) {
-    $.isFunction(modFns) ?
+var modFnsToProps = (modFns, props, elemName) => {
+
+    $.isFunction(modFns)?
         (props[buildModFnName(elemName, '*', '*')] = modFns) :
         $.each(modFns, function(modName, modFn) {
-            $.isFunction(modFn) ?
+            $.isFunction(modFn)?
                 (props[buildModFnName(elemName, modName, '*')] = modFn) :
                 $.each(modFn, function(modVal, modFn) {
                     props[buildModFnName(elemName, modName, modVal)] = modFn;
                 });
         });
+
 }
 
-function buildCheckMod(modName, modVal) {
-    return modVal ?
-        Array.isArray(modVal) ?
+var buildCheckMod = (modName, modVal) => {
+
+    return modVal?
+        Array.isArray(modVal)?
             function(block) {
                 var i = 0, len = modVal.length;
-                while(i < len) {
-                    if(block.hasMod(modName, modVal[i++])) {
+                while(i < len)
+                    if(block.hasMod(modName, modVal[i++]))
                         return true;
-                    }
-                }
                 return false;
             } :
             function(block) {
@@ -80,21 +92,21 @@ function buildCheckMod(modName, modVal) {
         function(block) {
             return block.hasMod(modName);
         };
+
 }
 
-/**
- * @desc Base block for creating BEM blocks
- * @class BEM
- */
-this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
+
+class iBem {
+
     /**
+     * @class Base block for creating BEM blocks
      * @constructs
      * @private
      * @param {Object} mods Block modifiers
      * @param {Object} params Block parameters
-     * @param {Boolean} [initImmediately=true]
      */
-    __constructor: function(mods, params, initImmediately) {
+    constructor (mods, params) {
+
         var _this = this;
 
         /**
@@ -116,37 +128,20 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
          * @protected
          * @type Object
          */
-        _this._params = params; // Для правильной сборки параметров у блока из нескольких DOM-элементов
+        _this._params = params; // это нужно для правильной сборки параметров у блока из нескольких нод
         _this.params = null;
 
-        initImmediately !== false ?
-            _this._init() :
-            _this.afterCurrentEvent(function() {
-                _this._init();
-            });
-    },
+    }
 
     /**
      * Initializes the block
      * @private
-     * @returns {BEM}
      */
-    _init: function() {
-        if(!this._initing && !this.hasMod('js', 'inited')) {
-            this._initing = true;
-
-            if(!this.params) {
-                this.params = $.extend(this.getDefaultParams(), this._params);
-                delete this._params;
-            }
-
-            this.setMod('js', 'inited');
-            delete this._initing;
-            this.hasMod('js', 'inited') && this.trigger('init');
-        }
+    _init () {
 
         return this;
-    },
+
+    }
 
     /**
      * Changes the context of the function being passed
@@ -155,9 +150,11 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {Object} [ctx=this] Context
      * @returns {Function} Function with a modified context
      */
-    changeThis: function(fn, ctx) {
+    changeThis (fn, ctx) {
+
         return fn.bind(ctx || this);
-    },
+
+    }
 
     /**
      * Executes the function in the context of the block, after the "current event"
@@ -165,9 +162,11 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {Function} fn
      * @param {Object} [ctx] Context
      */
-    afterCurrentEvent: function(fn, ctx) {
+    afterCurrentEvent (fn, ctx) {
+
         this.__self.afterCurrentEvent(this.changeThis(fn, ctx));
-    },
+
+    }
 
     /**
      * Executes the block's event handlers and live event handlers
@@ -176,20 +175,24 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {Object} [data] Additional information
      * @returns {BEM}
      */
-    trigger: function(e, data) {
+    trigger (e, data) {
+
         this
             .__base(e = this.buildEvent(e), data)
             .__self.trigger(e, data);
 
         return this;
-    },
 
-    buildEvent: function(e) {
+    }
+
+    buildEvent (e) {
+
         typeof e == 'string' && (e = $.Event(e));
         e.block = this;
 
         return e;
-    },
+
+    }
 
     /**
      * Checks whether a block or nested element has a modifier
@@ -199,7 +202,8 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {String} [modVal] Modifier value
      * @returns {Boolean}
      */
-    hasMod: function(elem, modName, modVal) {
+    hasMod (elem, modName, modVal) {
+
         var len = arguments.length,
             invert = false;
 
@@ -208,20 +212,23 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
             modName = elem;
             elem = undefined;
             invert = true;
-        } else if(len == 2) {
+        }
+        else if(len == 2) {
             if(typeof elem == 'string') {
                 modVal = modName;
                 modName = elem;
                 elem = undefined;
-            } else {
+            }
+            else {
                 modVal = '';
                 invert = true;
             }
         }
 
         var res = this.getMod(elem, modName) === modVal;
-        return invert ? !res : res;
-    },
+        return invert? !res : res;
+
+    }
 
     /**
      * Returns the value of the modifier of the block/nested element
@@ -230,54 +237,60 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {String} modName Modifier name
      * @returns {String} Modifier value
      */
-    getMod: function(elem, modName) {
+    getMod (elem, modName) {
+
         var type = typeof elem;
-        if(type === 'string' || type === 'undefined') { // Elem either omitted or undefined
+        if(type === 'string' || type === 'undefined') { // elem either omitted or undefined
             modName = elem || modName;
             var modCache = this._modCache;
-            return modName in modCache ?
+            return modName in modCache?
                 modCache[modName] :
                 modCache[modName] = this._extractModVal(modName);
         }
 
         return this._getElemMod(modName, elem);
-    },
+
+    }
 
     /**
      * Returns the value of the modifier of the nested element
      * @private
      * @param {String} modName Modifier name
      * @param {Object} elem Nested element
-     * @param {Object} [elemName] Nested element name
+     * @param {Object} [elem] Nested element name
      * @returns {String} Modifier value
      */
-    _getElemMod: function(modName, elem, elemName) {
+    _getElemMod (modName, elem, elemName) {
+
         return this._extractModVal(modName, elem, elemName);
-    },
+
+    }
 
     /**
      * Returns values of modifiers of the block/nested element
      * @protected
      * @param {Object} [elem] Nested element
-     * @param {...String} [modName] Modifier names
+     * @param {String} [modName1, ..., modNameN] Modifier names
      * @returns {Object} Hash of modifier values
      */
-    getMods: function(elem) {
+    getMods (elem) {
+
         var hasElem = elem && typeof elem != 'string',
             _this = this,
-            modNames = [].slice.call(arguments, hasElem ? 1 : 0),
-            res = _this._extractMods(modNames, hasElem ? elem : undefined);
+            modNames = [].slice.call(arguments, hasElem? 1 : 0),
+            res = _this._extractMods(modNames, hasElem? elem : undefined);
 
-        if(!hasElem) { // Caching
-            modNames.length ?
+        if(!hasElem) { // caching
+            modNames.length?
                 modNames.forEach(function(name) {
                     _this._modCache[name] = res[name];
-                }) :
+                }):
                 _this._modCache = res;
         }
 
         return res;
-    },
+
+    }
 
     /**
      * Sets the modifier for a block/nested element
@@ -287,7 +300,8 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {String} modVal Modifier value
      * @returns {BEM}
      */
-    setMod: function(elem, modName, modVal) {
+    setMod (elem, modName, modVal) {
+
         if(typeof modVal == 'undefined') {
             modVal = modName;
             modName = elem;
@@ -297,20 +311,17 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
         var _this = this;
 
         if(!elem || elem[0]) {
-            var modId = (elem && elem[0] ? $.identify(elem[0]) : '') + '_' + modName;
 
-            if(this._processingMods[modId]) {
-                return _this;
-            }
+            var modId = (elem && elem[0]? $.identify(elem[0]) : '') + '_' + modName;
+
+            if(this._processingMods[modId]) return _this;
 
             var elemName,
-                curModVal = elem ?
+                curModVal = elem?
                     _this._getElemMod(modName, elem, elemName = _this.__self._extractElemNameFrom(elem)) :
                     _this.getMod(modName);
 
-            if(curModVal === modVal) {
-                return _this;
-            }
+            if(curModVal === modVal) return _this;
 
             this._processingMods[modId] = true;
 
@@ -331,7 +342,8 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
         }
 
         return _this;
-    },
+
+    }
 
     /**
      * Function after successfully changing the modifier of the block/nested element
@@ -342,7 +354,7 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {Object} [elem] Nested element
      * @param {String} [elemName] Element name
      */
-    _afterSetMod: function(modName, modVal, oldModVal, elem, elemName) {},
+    _afterSetMod (modName, modVal, oldModVal, elem, elemName) {}
 
     /**
      * Sets a modifier for a block/nested element, depending on conditions.
@@ -356,8 +368,9 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {Boolean} [condition] Condition
      * @returns {BEM}
      */
-    toggleMod: function(elem, modName, modVal1, modVal2, condition) {
-        if(typeof elem == 'string') { // If this is a block
+    toggleMod (elem, modName, modVal1, modVal2, condition) {
+
+        if(typeof elem == 'string') { // if this is a block
             condition = modVal2;
             modVal2 = modVal1;
             modVal1 = modName;
@@ -376,12 +389,13 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
             this.setMod(
                 elem,
                 modName,
-                typeof condition === 'boolean' ?
-                    (condition ? modVal1 : modVal2) :
-                    this.hasMod(elem, modName, modVal1) ? modVal2 : modVal1);
+                typeof condition === 'boolean'?
+                    (condition? modVal1 : modVal2) :
+                    this.hasMod(elem, modName, modVal1)? modVal2 : modVal1);
 
         return this;
-    },
+
+    }
 
     /**
      * Removes a modifier from a block/nested element
@@ -390,14 +404,16 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {String} modName Modifier name
      * @returns {BEM}
      */
-    delMod: function(elem, modName) {
+    delMod (elem, modName) {
+
         if(!modName) {
             modName = elem;
             elem = undefined;
         }
 
         return this.setMod(elem, modName, '');
-    },
+
+    }
 
     /**
      * Executes handlers for setting modifiers
@@ -406,14 +422,15 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {String} modName Modifier name
      * @param {String} modVal Modifier value
      * @param {Array} modFnParams Handler parameters
-     * @returns {*|undefined}
      */
-    _callModFn: function(elemName, modName, modVal, modFnParams) {
+    _callModFn (elemName, modName, modVal, modFnParams) {
+
         var modFnName = buildModFnName(elemName, modName, modVal);
-        return this[modFnName] ?
+        return this[modFnName]?
            this[modFnName].apply(this, modFnParams) :
            undefined;
-    },
+
+    }
 
     /**
      * Retrieves the value of the modifier
@@ -422,9 +439,11 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {Object} [elem] Element
      * @returns {String} Modifier value
      */
-    _extractModVal: function(modName, elem) {
+    _extractModVal (modName, elem) {
+
         return '';
-    },
+
+    }
 
     /**
      * Retrieves name/value for a list of modifiers
@@ -433,9 +452,11 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {Object} [elem] Element
      * @returns {Object} Hash of modifier values by name
      */
-    _extractMods: function(modNames, elem) {
+    _extractMods (modNames, elem) {
+
         return {};
-    },
+
+    }
 
     /**
      * Returns a named communication channel
@@ -443,38 +464,45 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {Boolean} [drop=false] Destroy the channel
      * @returns {$.observable|undefined} Communication channel
      */
-    channel: function(id, drop) {
+    channel (id, drop) {
+
         return this.__self.channel(id, drop);
-    },
+
+    }
 
     /**
      * Returns a block's default parameters
      * @returns {Object}
      */
-    getDefaultParams: function() {
+    getDefaultParams () {
+
         return {};
-    },
+
+    }
 
     /**
      * Helper for cleaning up block properties
      * @param {Object} [obj=this]
-     * @returns {BEM}
      */
-    del: function(obj) {
+    del (obj) {
+
         var args = [].slice.call(arguments);
         typeof obj == 'string' && args.unshift(this);
         this.__self.del.apply(this.__self, args);
         return this;
-    },
+
+    }
 
     /**
      * Deletes a block
      */
-    destruct: function() {}
+    destruct () {}
 
-}, $.extend(this.BEM, /** @lends BEM */ {
+    //
+    // section static
+    //
 
-    _name: 'i-bem',
+    static get _name () { return 'i-bem' }
 
     /**
      * Storage for block declarations (hash by block name)
@@ -482,7 +510,7 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @protected
      * @type Object
      */
-    blocks: blocks,
+    static get blocks () { return blocks }
 
     /**
      * Declares blocks and creates a block class
@@ -495,18 +523,17 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {String} [decl.modVal] Modifier value
      * @param {Object} [props] Methods
      * @param {Object} [staticProps] Static methods
-     * @returns {Function}
      */
-    decl: function(decl, props, staticProps) {
-        if(typeof decl == 'string') {
-            decl = {block: decl};
-        } else if(decl.name) {
+    static decl (decl, props, staticProps) {
+
+        if(typeof decl == 'string')
+            decl = { block : decl };
+        else if(decl.name) {
             decl.block = decl.name;
         }
 
-        if(decl.baseBlock && !blocks[decl.baseBlock]) {
+        if(decl.baseBlock && !blocks[decl.baseBlock])
             throw('baseBlock "' + decl.baseBlock + '" for "' + decl.block + '" is undefined');
-        }
 
         props || (props = {});
 
@@ -537,7 +564,7 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
                             baseMethod && baseMethod !== props[name] &&
                                 (method = this.__base);
                         }
-                        return method ?
+                        return method?
                             method.apply(this, arguments) :
                             undefined;
                     });
@@ -553,7 +580,7 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
 
         var block;
         if(decl.block == baseBlock._name) {
-            // Makes a new "live" if the old one was already executed
+            // makes a new "live" if the old one was already executed
             (block = $.inheritSelf(baseBlock, props, staticProps))._processLive(true);
         } else {
             (block = blocks[decl.block] = $.inherit(baseBlock, props, staticProps))._name = decl.block;
@@ -561,30 +588,35 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
         }
 
         return block;
-    },
+
+    }
 
     /**
-     * Processes block's live properties.
+     * Processes a block's live properties
      * @private
-     * @param {Boolean} [heedLive=false] Take into account that block has already processed its live properties.
-     * @returns {Boolean} Whether the block is a live block.
+     * @param {Boolean} [heedLive=false] Whether to take into account that the block already processed its live properties
+     * @returns {Boolean} Whether the block is a live block
      */
-    _processLive: function(heedLive) {
+    static _processLive (heedLive) {
+
         return false;
-    },
+
+    }
 
     /**
      * Factory method for creating an instance of the block named
      * @static
      * @param {String|Object} block Block name or description
      * @param {Object} [params] Block parameters
-     * @returns {Object} Instance
+     * @returns {BEM}
      */
-    create: function(block, params) {
-        typeof block == 'string' && (block = {block: block});
+    static create (block, params) {
+
+        typeof block == 'string' && (block = { block : block });
 
         return new blocks[block.block](block.mods, params);
-    },
+
+    }
 
     /**
      * Returns the name of the current block
@@ -592,18 +624,20 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @protected
      * @returns {String}
      */
-    getName: function() {
+    static getName () {
+
         return this._name;
-    },
+
+    }
 
     /**
      * Retrieves the name of an element nested in a block
      * @static
      * @private
-     * @abstract
      * @param {Object} elem Nested element
+     * @returns {String|undefined}
      */
-    _extractElemNameFrom: function(elem) {},
+    static _extractElemNameFrom (elem) {}
 
     /**
      * Adds a function to the queue for executing after the "current event"
@@ -612,22 +646,28 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {Function} fn
      * @param {Object} ctx
      */
-    afterCurrentEvent: function(fn, ctx) {
-        afterCurrentEventFns.push({fn: fn, ctx: ctx}) == 1 &&
+    static afterCurrentEvent (fn, ctx) {
+
+        afterCurrentEventFns.push({ fn : fn, ctx : ctx }) == 1 &&
             setTimeout(this._runAfterCurrentEventFns, 0);
-    },
+
+    }
 
     /**
      * Executes the queue
-     * @protected
+     * @private
      */
-    _runAfterCurrentEventFns: function() {
-        var fnsLen = afterCurrentEventFns.length;
+    static _runAfterCurrentEventFns () {
 
-        fnsLen && afterCurrentEventFns.splice(0, fnsLen).forEach(function(fnObj) {
-            fnObj.fn.call(fnObj.ctx || this);
-        }, this);
-    },
+        var fnsLen = afterCurrentEventFns.length;
+        if(fnsLen) {
+            var fnObj,
+                fnsCopy = afterCurrentEventFns.splice(0, fnsLen);
+
+            while(fnObj = fnsCopy.shift()) fnObj.fn.call(fnObj.ctx || this);
+        }
+
+    }
 
     /**
      * Changes the context of the function being passed
@@ -636,27 +676,28 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {Object} ctx Context
      * @returns {Function} Function with a modified context
      */
-    changeThis: function(fn, ctx) {
+    static changeThis (fn, ctx) {
+
         return fn.bind(ctx || this);
-    },
+
+    }
 
     /**
      * Helper for cleaning out properties
      * @param {Object} [obj=this]
-     * @returns {BEM}
      */
-    del: function(obj) {
+    static del (obj) {
+
         var delInThis = typeof obj == 'string',
-            i = delInThis ? 0 : 1,
+            i = delInThis? 0 : 1,
             len = arguments.length;
         delInThis && (obj = this);
 
-        while(i < len) {
-            delete obj[arguments[i++]];
-        }
+        while(i < len) delete obj[arguments[i++]];
 
         return this;
-    },
+
+    }
 
     /**
      * Returns/destroys a named communication channel
@@ -664,7 +705,8 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
      * @param {Boolean} [drop=false] Destroy the channel
      * @returns {$.observable|undefined} Communication channel
      */
-    channel: function(id, drop) {
+    static channel (id, drop) {
+
         if(typeof id == 'boolean') {
             drop = id;
             id = undefined;
@@ -681,7 +723,9 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
         }
 
         return channels[id] || (channels[id] = new $.observable());
+
     }
 
-}));
-})(jQuery);
+}
+return iBem;
+})();
