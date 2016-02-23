@@ -10,6 +10,7 @@ es6 i-bem implementation (with classes, w/o imports)
 * добавить this.__self
 * осознать что нужно сделать с __base (перегнать в `super.названиеМетода`)
 * добавить `iBem` в `BEM`, и `iBemDom` в `BEM.DOM`
+
 ## TODO
 * дописать парсер для перегона __base в `super.названиеМетода`
 * понять, куда засунуть decl,
