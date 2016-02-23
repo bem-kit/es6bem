@@ -16,11 +16,10 @@
     <div class="gallery gallery_thumbs-size_default i-bem" data-bem='{"gallery":{}}'><div class="carousel i-bem" data-bem='{"carousel":{"step":"190","offset":300,"controls":false}}'><div class="carousel__wrap"><div class="carousel__list clearfix"></div></div></div></div>
 
 </body>
-
+<!-- В Chrome пока нет export/import -->
 <script src="libs/lodash.js"></script>
 <script src="libs/i-jquery__core_version_1.8.3.js"></script>
-<script src="libs/i-jquery__identify.js"></script> 
-<script>var slug = string => string.replace(/-/g, '').replace(/\W+/g, '-');</script>
+<script src="libs/i-jquery__identify.js"></script>
 <script >_.set(window, 'module.exports', {});</script>
 
 <script src="libs/i-bem.globals.js"></script> 
@@ -44,8 +43,7 @@ var cl = console.log.bind(console);
 cl('libs loaded successfuly');
 _.set(window, 'Ya.Images.ThumbsStore', {});
 // block preview - просмотр картинок
-var previewCommon = (()=>{
-'use strict';
+var previewCommon = (()=>{'use strict';
 class previewCommon extends iBemDom {
     constructor(){
         super('.preview2');
