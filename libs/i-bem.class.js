@@ -96,7 +96,7 @@ var buildCheckMod = (modName, modVal) => {
 }
 
 
-class iBem {
+class iBem extends iObservable {
 
     /**
      * @class Base block for creating BEM blocks
@@ -106,6 +106,8 @@ class iBem {
      * @param {Object} params Block parameters
      */
     constructor (mods, params) {
+
+        super();
 
         var _this = this;
 
@@ -178,10 +180,9 @@ class iBem {
      * @returns {BEM}
      */
     trigger (e, data) {
-
-        this
-            .__base(e = this.buildEvent(e), data)
-            .__self.trigger(e, data);
+        
+        super.trigger(e = this.buildEvent(e), data);
+        // this.__self.trigger(e, data); // FIXME WTF
 
         return this;
 

@@ -423,9 +423,8 @@ class iBemDom extends iBem {
      */
     trigger (e, data) {
 
-        this
-            .__base(e = this.buildEvent(e), data)
-            .domElem && this._ctxTrigger(e, data);
+        super.trigger(e = this.buildEvent(e), data);
+        this.domElem && this._ctxTrigger(e, data);
 
         return this;
 
@@ -481,7 +480,7 @@ class iBemDom extends iBem {
             });
             return _this;
         }
-        return this.__base(elem, modName, modVal);
+        return super.setMod(elem, modName, modVal);
 
     }
 
@@ -515,7 +514,7 @@ class iBemDom extends iBem {
      */
     _extractMods (modNames, elem) {
 
-        var res = {}
+        var res = {},
             extractAll = !modNames.length,
             countMatched = 0;
 

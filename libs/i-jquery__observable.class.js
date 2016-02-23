@@ -1,4 +1,4 @@
-module.exports.Observable = (()=>{
+module.exports.iObservable = (()=>{
 'use strict';
 
 var storageExpando = '__' + Number(new Date()) + 'storage',
@@ -6,7 +6,7 @@ var storageExpando = '__' + Number(new Date()) + 'storage',
         return $.identify(fn) + (ctx ? $.identify(ctx) : '');
     };
 
-class Observable {
+class iObservable {
 
     /**
      * Builds full event name
@@ -169,5 +169,5 @@ class Observable {
     }
 }
 
-return Observable;
+return iObservable;
 })();
