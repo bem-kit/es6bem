@@ -109,6 +109,8 @@ class iBem {
 
         var _this = this;
 
+        _this.__self = _this.constructor;
+
         /**
          * Cache of block modifiers
          * @private
