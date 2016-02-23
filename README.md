@@ -16,6 +16,7 @@ es6 i-bem implementation (with classes, w/o imports)
 * починить `BEM.DOM.scope`
 
 ## TODO
+* починить `$('.preview2').bem('preview2')` и `initBlock`
 * дописать парсер для перегона `__base` в `super.названиеМетода`
 * ... починить сотни других багов ...
 * понять, что делать с `decl({block, modName, modVal})`. пока есть лишь примерное понимание, как это будет работать
