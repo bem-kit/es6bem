@@ -14,9 +14,10 @@ es6 i-bem implementation (with classes, w/o imports)
   в котором, например, производится добавление блоков в `BEM.blocks`,
   который нужен, например, для инстанцирования бездомных блоков (`BEM.create`)
 * починить `BEM.DOM.scope`
+* починить `$('.preview2').bem('preview2')` и `initBlock`
 
 ## TODO
-* починить `$('.preview2').bem('preview2')` и `initBlock`
+* понять, почему выстявляется `iBemDom#_params`, но не `params`
 * ...
 * дописать парсер для перегона `__base` в `super.названиеМетода` (*#конвертор_проекта*)
 * ... починить сотни других багов ...
