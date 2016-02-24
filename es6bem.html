@@ -20,11 +20,8 @@
 <script src="libs/lodash.js"></script>
 <script src="libs/i-jquery__core_version_1.8.3.js"></script>
 <script src="libs/i-jquery__identify.js"></script>
-<script >_.set(window, 'module.exports', {});</script>
 
-<script src="libs/i-bem.globals.js"></script> 
-
-<script src="libs/i-jquery__observable.class.js"></script>
+<script >_.set(window, 'module.exports', {}); var cl = console.log.bind(console);</script>
 
 <!-- import iObservable -->
     <script src="libs/i-jquery__observable.class.js"></script>
@@ -38,34 +35,13 @@
     <script src="libs/i-bem.dom.class.js"></script>
     <script >var iBemDom = _.get(window, 'module.exports.iBemDom')</script>
 
-<script>
-var cl = console.log.bind(console);
-cl('libs loaded successfuly');
-_.set(window, 'Ya.Images.ThumbsStore', {});
+<script>cl('libs loaded successfuly');</script>
 
-// i-preloader: предзагрузчик картинок (TODO заюзать Cach API, когда браузеры пофиксят баги)
-var Preloader = (()=>{'use strict';
-    class Preloader extends BEM { /* todo implement later */ }
-    return Preloader;
-})();
-BEM.es6decl('i-preloader', Preloader);
+<script src="test.blocks.js"></script>
 
-// block preview - просмотр картинок
-var PreviewCommon = (()=>{'use strict';
-    class PreviewCommon extends BEM.DOM {
-        constructor(){
-            super('.preview2');
-            this._preloader = BEM.create({ block: 'i-preloader', mods: { timeout: 'yes', 'preview-speed': 'yes' } });
-            this.thumb = this.elem('thumb');
-            this._spin = this.findBlockOn(this.elem('spin'), 'spinner');
-            this._store = _.get(window, 'Ya.Images.ThumbsStore');
-        }
-    }
-    return PreviewCommon;
-})();
+<!-- run iBem init -->
+<script>$(() => BEM.afterCurrentEvent(() => BEM.DOM.init()));</script>
 
-BEM.es6decl('preview2', PreviewCommon);
-
-new PreviewCommon();
-
+<script type="module">
+    import 'libs/aux/export.js'
 </script>

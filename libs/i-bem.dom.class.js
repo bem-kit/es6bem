@@ -5,10 +5,182 @@
 
 // todo заменить все __base
 
-module.exports.iBemDom = (()=>{
-'use strict';
+var DOM; // global
 
-let scope = null;
+module.exports.iBemDom = (() => { 'use strict';
+
+let scope = null,
+    win = $(window),
+    doc = $(document),
+
+/**
+ * Storage for DOM elements by unique key
+ * @private
+ * @type {Object}
+ */
+    uniqIdToDomElems = {},
+
+/**
+ * Storage for blocks by unique key
+ * @static
+ * @private
+ * @type {Object}
+ */
+    uniqIdToBlock = {},
+
+/**
+ * Storage for block parameters
+ * @private
+ * @type {Object}
+ */
+    domElemToParams = {},
+
+/**
+ * Storage for liveCtx event handlers
+ * @private
+ * @type {Object}
+ */
+    liveEventCtxStorage = {},
+
+/**
+ * Storage for liveClass event handlers
+ * @private
+ * @type {Object}
+ */
+    liveClassEventStorage = {},
+
+    INTERNAL = BEM.INTERNAL,
+
+    NAME_PATTERN = INTERNAL.NAME_PATTERN,
+
+    MOD_DELIM = INTERNAL.MOD_DELIM,
+    ELEM_DELIM = INTERNAL.ELEM_DELIM,
+
+    buildModPostfix = INTERNAL.buildModPostfix,
+    buildClass = INTERNAL.buildClass,
+
+    slice = Array.prototype.slice,
+    reverse = Array.prototype.reverse;
+
+/**
+ * Initializes blocks on a DOM element
+ * @private
+ * @param {jQuery} domElem DOM element
+ * @param {String} uniqInitId ID of the "initialization wave"
+ */
+function init(domElem, uniqInitId) {
+    var domNode = domElem[0];
+    $.each(getParams(domNode), function(blockName, params) {
+        processParams(params, domNode, blockName, uniqInitId);
+        var block = uniqIdToBlock[params.uniqId];
+        if(block) {
+            if(block.domElem.index(domNode) < 0) {
+                block.domElem = block.domElem.add(domElem);
+                $.extend(block._params, params);
+            }
+        } else {
+            initBlock(blockName, domElem, params);
+        }
+    });
+}
+
+/**
+ * Processes and adds necessary block parameters
+ * @private
+ * @param {Object} params Initialization parameters
+ * @param {HTMLElement} domNode DOM node
+ * @param {String} blockName Block name
+ * @param {String} [uniqInitId] ID of the "initialization wave"
+ * @returns {Object}
+ */
+function processParams(params, domNode, blockName, uniqInitId) {
+    (params || (params = {})).uniqId ||
+        (params.uniqId = (params.id ? blockName + '-id-' + params.id : $.identify()) + (uniqInitId || $.identify()));
+
+    var domUniqId = $.identify(domNode),
+        domParams = domElemToParams[domUniqId] || (domElemToParams[domUniqId] = {});
+
+    domParams[blockName] || (domParams[blockName] = params);
+
+    return params;
+}
+
+/**
+ * Helper for searching for a DOM element using a selector inside the context, including the context itself
+ * @private
+ * @param {jQuery} ctx Context
+ * @param {String} selector CSS selector
+ * @param {Boolean} [excludeSelf=false] Exclude context from search
+ * @returns {jQuery}
+ */
+function findDomElem(ctx, selector, excludeSelf) {
+    var res = ctx.find(selector);
+    return excludeSelf ?
+       res :
+       res.add(ctx.filter(selector));
+}
+
+/**
+ * Returns parameters of a block's DOM element
+ * @private
+ * @param {HTMLElement} domNode DOM node
+ * @returns {Object}
+ */
+function getParams(domNode) {
+    var uniqId = $.identify(domNode);
+    return domElemToParams[uniqId] ||
+           (domElemToParams[uniqId] = extractParams(domNode));
+}
+
+/**
+ * Retrieves block parameters from a DOM element
+ * @private
+ * @param {HTMLElement} domNode DOM node
+ * @returns {Object}
+ */
+function extractParams(domNode) {
+    var fn,
+        elem,
+        attr = domNode.getAttribute('data-bem');
+
+    if(attr) {
+        return JSON.parse(attr);
+    }
+
+    fn = domNode.onclick || domNode.ondblclick;
+
+    // LEGO-2027 in FF onclick doesn't work on body
+    if(!fn && domNode.tagName.toLowerCase() == 'body') {
+        elem = $(domNode);
+        attr = elem.attr('onclick') || elem.attr('ondblclick');
+        /*jshint -W054 */
+        attr && (fn = new Function(attr));
+        /*jshint +W054 */
+    }
+
+    return fn ? fn() : {};
+}
+
+/**
+ * Cleans up all the BEM storages associated with a DOM node
+ * @private
+ * @param {HTMLElement} domNode DOM node
+ */
+function cleanupDomNode(domNode) {
+    delete domElemToParams[$.identify(domNode)];
+}
+
+/**
+ * Uncople DOM node from the block. If this is the last node, then destroys the block.
+ * @private
+ * @param {BEM.DOM} block block
+ * @param {HTMLElement} domNode DOM node
+ */
+function removeDomNodeFromBlock(block, domNode) {
+    block.domElem.length === 1 ?
+        block.destruct(true) :
+        block.domElem = block.domElem.not(domNode);
+}
 
 class iBemDom extends iBem {
     /**
@@ -1465,7 +1637,64 @@ $(function() {
     BEM.DOM.scope = $('body');
 });
 
-BEM.DOM = iBemDom;
+DOM = BEM.DOM = iBemDom;
+
+/**
+ * Initializes a specific block on a DOM element, or returns the existing block if it was already created
+ * @private
+ * @param {String} blockName Block name
+ * @param {jQuery} domElem DOM element
+ * @param {Object} [params] Initialization parameters
+ * @param {Boolean} [forceLive] Force live initialization
+ * @param {Function} [callback] Handler to call after complete initialization
+ * @returns {BEM.DOM}
+ */
+function initBlock(blockName, domElem, params, forceLive, callback) {
+    if(typeof params == 'boolean') {
+        callback = forceLive;
+        forceLive = params;
+        params = undefined;
+    }
+
+    var domNode = domElem[0];
+    params = processParams(params || getParams(domNode)[blockName], domNode, blockName);
+
+    var uniqId = params.uniqId;
+    if(uniqIdToBlock[uniqId]) {
+        return uniqIdToBlock[uniqId]._init();
+    }
+
+    uniqIdToDomElems[uniqId] = uniqIdToDomElems[uniqId] ?
+        uniqIdToDomElems[uniqId].add(domElem) :
+        domElem;
+
+    var parentDomNode = domNode.parentNode;
+    if(!parentDomNode || parentDomNode.nodeType === 11) { // JQuery doesn't unique disconnected node
+        $.unique(uniqIdToDomElems[uniqId]);
+    }
+
+    // FIXME: понять, что делать с BEM.DOM.decl
+    var BlockClass = BEM.blocks[blockName] || BEM.DOM.decl(blockName, {}, {live: true});
+    if(!(BlockClass._liveInitable = Boolean(BlockClass._processLive())) || forceLive || params.live === false) {
+        forceLive && domElem.addClass('i-bem');
+
+        var block = new BlockClass(uniqIdToDomElems[uniqId], params, Boolean(forceLive));
+
+        delete uniqIdToDomElems[uniqId];
+        callback && callback.apply(block, slice.call(arguments, 4));
+        return block;
+    }
+}
+
+/**
+ * Returns a block on a DOM element and initializes it if necessary
+ * @param {String} blockName Block name
+ * @param {Object} params Block parameters
+ * @returns {BEM.DOM}
+ */
+$.fn.bem = function(blockName, params) {
+    return initBlock(blockName, this, params, true);
+};
 
 return iBemDom;
 })();
