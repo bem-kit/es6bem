@@ -35,21 +35,26 @@ es6 i-bem implementation (with classes, w/o imports)
 ## Resources
 ### Фрагменты для конвертора проекта 
 #### `this.__base` -> `super.<method_name>`
-1. файлы прогоняются через esprime
-2. над получкнными json-ast файлами запускается jq
-```jq
-def walk(f): . as $in | if type == "object" then reduce keys[] as $key ( {}; . + { ($key): ($in[$key] | walk(f)) } ) | f elif type == "array" then map( walk(f) ) | f else f end;
-.
-  | walk(
-    if (.type?//"")=="MethodDefinition" then (
-      . as $md | .key.name as $mn | $md
-      | walk(if (.type?//"") == "MemberExpression" then (
-          if .property.name == "__base"
-          then . as $mem | .property.name |= $mn
-          else . end
-      ) else . end)
-    ) else . end
-  )
-  | ( .. | select(.type=="MethodDefinition")? | .. | select(.type == "MemberExpression")? | .. | select(.object.type == "ThisExpression")  |  .object.type ) = "Super" 
-```
+1. файлы прогоняются через `esprima`
+2. над полученными `json-ast`-файлами запускается `jq`
+    ```jq
+    def walk(f): . as $in | if type == "object" then reduce keys[] as $key ( {}; . + { ($key): ($in[$key] | walk(f)) } ) | f elif type == "array" then map( walk(f) ) | f else f end;
+    .
+      | walk(
+        if (.type?//"")=="MethodDefinition" then (
+          . as $md | .key.name as $mn | $md
+          | walk(if (.type?//"") == "MemberExpression" then (
+              if .property.name == "__base"
+              then . as $mem | .property.name |= $mn
+              else . end
+          ) else . end)
+        ) else . end
+      )
+      | ( ..
+        | select(.type=="MethodDefinition")? | .. 
+        | select(.type == "MemberExpression")? | .. 
+        | select(.object.type == "ThisExpression")
+        | .object.type
+        ) = "Super" 
+    ```
 3. модифицированные деревья через `escodegen` переводятся обратно в js 
