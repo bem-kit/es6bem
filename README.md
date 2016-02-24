@@ -36,6 +36,8 @@ es6 i-bem implementation (with classes, w/o imports)
 ### Фрагменты для конвертора проекта 
 #### `this.__base` -> `super.<method_name>`
 ##### 1. файлы прогоняются через `esprima`
+См. [сокращённый пример одного estree файла](https://gist.github.com/a-x-/9ac7fa9f76cd07465f7e).
+
 ##### 2. над полученными `json-ast`-файлами запускается `jq`
 ```jq
 def walk(f): . as $in | if type == "object" then reduce keys[] as $key ( {}; . + { ($key): ($in[$key] | walk(f)) } ) | f elif type == "array" then map( walk(f) ) | f else f end;
@@ -57,4 +59,5 @@ def walk(f): . as $in | if type == "object" then reduce keys[] as $key ( {}; . +
     | .object.type
     ) = "Super" 
 ```
+
 ##### 3. модифицированные деревья через `escodegen` переводятся обратно в js 
